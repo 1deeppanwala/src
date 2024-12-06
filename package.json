@@ -1,11 +1,13 @@
 {
   "name": "todolist-manager",
   "version": "1.0.0",
-  "description": "A simple To-Do list manager application with CI/CD pipeline",
+  "description": "A To-Do list manager with CI/CD pipeline",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "test": "mocha tests/*.test.js",
-    "start": "node app.js"
+    "build": "docker build -t todolist-manager .",
+    "docker-run": "docker-compose up"
   },
   "dependencies": {
     "express": "^4.17.1",
@@ -15,7 +17,8 @@
   },
   "devDependencies": {
     "mocha": "^8.2.1",
-    "chai": "^4.3.4"
+    "chai": "^4.3.4",
+    "supertest": "^6.1.6"
   },
   "author": "Your Name",
   "license": "ISC"
