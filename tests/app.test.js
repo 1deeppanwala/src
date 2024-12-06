@@ -1,26 +1,22 @@
 const request = require('supertest');
-const app = require('../app'); // Assuming app.js exports the app
+const app = require('../app');
 
-describe('GET /todos', function() {
-  it('responds with JSON', function(done) {
+describe('To-Do API', () => {
+  it('GET /todos should return all to-dos', (done) => {
     request(app)
       .get('/todos')
-      .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200, done);
   });
-});
 
-describe('POST /todos', function() {
-  it('creates a new todo and responds with JSON', function(done) {
+  it('POST /todos should create a new to-do', (done) => {
     request(app)
       .post('/todos')
-      .send({ title: 'Test Todo' })
-      .set('Accept', 'application/json')
+      .send({ title: 'Test To-Do' })
       .expect('Content-Type', /json/)
       .expect(200)
-      .expect(function(res) {
-        if (!('title' in res.body)) throw new Error("Missing title in response");
+      .expect((res) => {
+        if (!res.body.title) throw new Error('Missing title in response');
       })
       .end(done);
   });
