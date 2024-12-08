@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline with OWASP ZAP
 
 on:
   push:
@@ -13,28 +13,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Run tests
-      run: npm test
+      - name: Run tests
+        run: npm test
 
-  deploy:
-    needs: build
+  security_scan:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Deploy to server
-      run: |
-        # Your deployment commands go here (e.g., using Docker or other deployment tools)
+      - name: Set up OWASP ZAP for Security Scan
+        uses: zaproxy/action-full-scan@v0.5.0
+        with:
+          target: 'http://localhost:3000'  # Replace with the URL of your application
+          
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: zap-report
+          path: /zap/wrk/spider_report.html   # Path to save the generated report from ZAP
