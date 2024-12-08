@@ -34,13 +34,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Log in to DockerHub (if needed)
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Set up OWASP ZAP for Security Scan
-        uses: zaproxy/action-full-scan@v0.5.0
+        uses: zaproxy/action-full-scan@v0.6.0  # Updated to v0.6.0
         with:
           target: 'http://localhost:3000'  # Replace with the URL of your application
           
       - name: Upload ZAP Report
-        uses: actions/upload-artifact@v3  # Updated to v3
+        uses: actions/upload-artifact@v3
         with:
           name: zap-report
           path: /zap/wrk/spider_report.html   # Path to save the generated report from ZAP
