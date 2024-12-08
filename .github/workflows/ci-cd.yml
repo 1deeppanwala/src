@@ -37,13 +37,13 @@ jobs:
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}   # DockerHub username from Secrets
-          password: ${{ secrets.DOCKER_PASSWORD }}   # DockerHub password or token from Secrets
+          username: ${{ secrets.DOCKER_USERNAME }}   # DockerHub username from GitHub secrets
+          password: ${{ secrets.DOCKER_PASSWORD }}   # DockerHub password or token from GitHub secrets
 
       - name: Set up OWASP ZAP for Security Scan
         uses: zaproxy/action-full-scan@v0.6.0
         with:
-          target: 'http://localhost:3000'  # Replace with the URL of your application
+          target: 'http://localhost:3000'  # Replace with your application URL
           
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v3
