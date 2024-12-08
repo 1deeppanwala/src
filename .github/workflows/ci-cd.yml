@@ -1,4 +1,4 @@
-name: CI/CD Pipeline with OWASP ZAP
+\name: CI/CD Pipeline with OWASP ZAP
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
           target: 'http://localhost:3000'  # Replace with the URL of your application
           
       - name: Upload ZAP Report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3  # Updated to v3
         with:
           name: zap-report
           path: /zap/wrk/spider_report.html   # Path to save the generated report from ZAP
