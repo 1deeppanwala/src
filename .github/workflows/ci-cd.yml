@@ -43,7 +43,7 @@ jobs:
       - name: Run OWASP ZAP Security Scan
         uses: zaproxy/action-full-scan@v0.6.0
         with:
-          target: 'http://localhost:3000'  # Replace with the URL of your application
+          target: 'http://host.docker.internal:3000'  # Update target to use host.docker.internal
           rules: WARN                     # Optional: Continue with warnings
           report: true                    # Generate detailed HTML report
 
