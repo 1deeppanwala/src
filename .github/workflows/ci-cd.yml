@@ -23,20 +23,11 @@ jobs:
         with:
           node-version: '14'
 
-      # Step 3: Cache Node.js dependencies
-      - name: Cache Node.js modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      # Step 4: Install dependencies
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Step 5: Run tests
+      # Step 4: Run tests
       - name: Run tests
         run: npm test
 
@@ -48,24 +39,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Log in to DockerHub
-      - name: Log in to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}   # DockerHub username from GitHub secrets
-          password: ${{ secrets.DOCKER_PASSWORD }}   # DockerHub password or token from GitHub secrets
-
-      # Step 3: Set up OWASP ZAP for Security Scan
+      # Step 2: Run OWASP ZAP Security Scan
       - name: Run OWASP ZAP Security Scan
         uses: zaproxy/action-full-scan@v0.6.0
         with:
-          target: 'http://localhost:3000'  # Replace with the URL of your application
-          rules: WARN                     # Optional: Continue with warnings
-          report: true                    # Generate detailed HTML report
+          target: 'http://localhost:3000'  # Replace with your application's base URL
+          rules: WARN                     # Continue pipeline with warnings
+          report: true                    # Generate HTML, JSON, and MD reports
 
-      # Step 4: Upload ZAP Report as Artifact
-      - name: Upload ZAP Report
+      # Step 3: Upload ZAP Report as Artifact
+      - name: Upload ZAP Reports
         uses: actions/upload-artifact@v3
         with:
-          name: zap-report
-          path: /zap/wrk/spider_report.html   # Path to save the generated report from ZAP
+          name: zap-reports
+          path: |
+            report_html.html   # HTML report
+            report_json.json   # JSON report
+            report_md.md       # Markdown report
