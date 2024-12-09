@@ -13,17 +13,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '14'
 
+      # Step 3: Cache Node.js dependencies
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # Step 4: Install dependencies
       - name: Install dependencies
         run: npm install
 
+      # Step 5: Run tests
       - name: Run tests
         run: npm test
 
@@ -31,20 +44,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Step 2: Log in to DockerHub
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}   # DockerHub username from GitHub secrets
           password: ${{ secrets.DOCKER_PASSWORD }}   # DockerHub password or token from GitHub secrets
 
-      - name: Set up OWASP ZAP for Security Scan
+      # Step 3: Set up OWASP ZAP for Security Scan
+      - name: Run OWASP ZAP Security Scan
         uses: zaproxy/action-full-scan@v0.6.0
         with:
-          target: 'http://localhost:3000'  # Replace with your application URL
-          
+          target: 'http://localhost:3000'  # Replace with the URL of your application
+          rules: WARN                     # Optional: Continue with warnings
+          report: true                    # Generate detailed HTML report
+
+      # Step 4: Upload ZAP Report as Artifact
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v3
         with:
