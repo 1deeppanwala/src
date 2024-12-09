@@ -34,20 +34,40 @@ jobs:
   security_scan:
     runs-on: ubuntu-latest
 
+    services:
+      app:
+        image: your-docker-image:latest # Replace with your application Docker image
+        ports:
+          - 3000:3000
+        options: --name app-container
+
     steps:
       # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Run OWASP ZAP Security Scan
+      # Step 2: Wait for application to start
+      - name: Wait for application
+        run: |
+          echo "Waiting for the application to start..."
+          for i in {1..10}; do
+            curl -s http://localhost:3000 && break
+            echo "Waiting..."
+            sleep 5
+          done
+
+      # Step 3: Run OWASP ZAP Security Scan
       - name: Run OWASP ZAP Security Scan
         uses: zaproxy/action-full-scan@v0.6.0
+        env:
+          ZAP_DISABLE_ADDONS: 'true' # Optional: Disable auto add-on updates
         with:
-          target: 'http://localhost:3000'  # Replace with your application's base URL
-          rules: WARN                     # Continue pipeline with warnings
-          report: true                    # Generate HTML, JSON, and MD reports
+          target: 'http://app-container:3000'  # Use Docker container name as hostname
+          timeout: 600                         # Extend timeout to 10 minutes
+          rules: WARN                          # Continue on warnings
+          report: true                         # Generate HTML, JSON, and MD reports
 
-      # Step 3: Upload ZAP Report as Artifact
+      # Step 4: Upload ZAP Reports
       - name: Upload ZAP Reports
         uses: actions/upload-artifact@v3
         with:
